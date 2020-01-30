@@ -1,15 +1,15 @@
 # GoLinkFinder
 A minimal JS endpoint extractor 
 
-#Why?
+# Why?
 To extract endpoints in both HTML source and embedded javascript files. Useful for bug hunters, red teamers, infosec ninjas. 
 
 
-#Version
+# Version
 1.0.0-alpha
 
 
-#Usage?
+# Usage?
 
 ```[-d|--domain] is required
 usage: goLinkFinder [-h|--help] -d|--domain "<value>" [-o|--out "<value>"]
@@ -21,7 +21,7 @@ Arguments:
   -o  --out     File name :  (e.g : output.txt)
  ```
  
- #How? 
+ # How? 
  best used with grep
  
  ```
@@ -33,24 +33,24 @@ Output :
  "https://api.github.com/_private/browser/errors"
  ```
 you can easily pipe out its with your other tools. 
-#Watch
+# Watch
 [![asciicast](https://asciinema.org/a/k1g1WNVS0Zp5wvcXpBhDC2De3.svg)](https://asciinema.org/a/k1g1WNVS0Zp5wvcXpBhDC2De3)
 
 
-#Requirements 
+# Requirements 
 Go >= 1.13
-#Installation 
+# Installation 
 ```
 Git clone https://github.com/0xsha/GoLinkFinder.git
 cd GoLinkFinder
 go build GoLinkfinder.go 
 ```
 
-#Feature request or found an issue?
+# Feature request or found an issue?
 Please write a patch to fix it and then pull a request. 
 
 
-#References
+# References
 
 Python implementation:
 https://github.com/GerbenJavado/LinkFinder 

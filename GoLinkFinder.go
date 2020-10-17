@@ -183,8 +183,8 @@ func main() {
 
 	var baseUrl = *domain
 
-	if !strings.HasPrefix(baseUrl, "https://") ||
-		!strings.HasPrefix(baseUrl, "http://") {
+	if !strings.HasPrefix(baseUrl, "http://") &&
+		!strings.HasPrefix(baseUrl, "https://") {
 		baseUrl = "https://" + baseUrl
 
 	}

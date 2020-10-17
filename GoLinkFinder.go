@@ -23,6 +23,7 @@ import (
 /// Global variables ///
 
 const version = "1.0.0-alpha"
+
 // you can change it
 const concurrency = 10
 
@@ -31,7 +32,7 @@ const regexStr = `(?:"|')(((?:[a-zA-Z]{1,10}://|//)[^"'/]{1,}\.[a-zA-Z]{2,}[^"']
 
 // will add everything to this list
 // you can change it to SQLite
-var founds [] string
+var founds []string
 
 func unique(strSlice []string) []string {
 	keys := make(map[string]bool)
@@ -71,17 +72,16 @@ func parseFile(req *http.Request, resp *http.Response, err error) {
 
 }
 
-func extractUrlFromJS(urls [] string, baseUrl string) []string {
+func extractUrlFromJS(urls []string, baseUrl string) []string {
 
 	urls = unique(urls)
 
-	var cleaned [] string
+	var cleaned []string
 
 	for i := 1; i < len(urls); i++ {
 
 		urls[i] = strings.ReplaceAll(urls[i], "'", "")
 		urls[i] = strings.ReplaceAll(urls[i], "\"", "")
-
 
 		if len(urls[i]) < 5 {
 			continue
@@ -132,9 +132,9 @@ func matchAndAdd(content string) []string {
 
 }
 
-func appendBaseUrl(urls [] string, baseUrl string) []string {
+func appendBaseUrl(urls []string, baseUrl string) []string {
 	urls = unique(urls)
-	var n [] string
+	var n []string
 	for i := 0; i < len(urls); i++ {
 		n = append(n, baseUrl+strings.TrimSpace(urls[i]))
 	}
@@ -178,15 +178,24 @@ func main() {
 	err := parser.Parse(os.Args)
 	if err != nil {
 		fmt.Print(parser.Usage(err))
-		os.Exit(-1)
+
 	}
 
 	var baseUrl = *domain
+
+	if !strings.HasPrefix("https://", baseUrl) ||
+		!strings.HasPrefix("http://", baseUrl) {
+		baseUrl = "https://" + baseUrl
+
+	}
+
 	var htmlUrls = extractJSLinksFromHTML(baseUrl)
 	downloadJSFile(htmlUrls, concurrency)
 	founds = unique(founds)
 
 	for _, found := range founds {
+		found = strings.ReplaceAll(found, "\"", "")
+		found = strings.ReplaceAll(found, "'", "")
 		fmt.Println(found)
 	}
 
@@ -194,18 +203,19 @@ func main() {
 
 		f, err := os.OpenFile("./"+*output,
 			os.O_CREATE|os.O_WRONLY, 0644)
+		defer f.Close()
+
 		if err != nil {
 			log.Println(err)
 		}
 
 		for _, found := range founds {
-			fmt.Println(found)
+			found = strings.ReplaceAll(found, "\"", "")
+			found = strings.ReplaceAll(found, "'", "")
 			if _, err := f.WriteString(found + "\n"); err != nil {
 				log.Fatal(err)
 			}
 		}
-
-		defer f.Close()
 
 	}
 

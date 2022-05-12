@@ -50,9 +50,7 @@ Go >= 1.13
 # Installation
 
 ```
-Git clone https://github.com/0xsha/GoLinkFinder.git
-cd GoLinkFinder
-go build GoLinkfinder.go
+go install github.com/0xsha/GoLinkFinder@latest
 ```
 
 # Feature request or found an issue?

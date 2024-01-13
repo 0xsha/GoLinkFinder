@@ -7,7 +7,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -62,7 +62,10 @@ func parseFile(req *http.Request, resp *http.Response, err error) {
 	if err != nil {
 		return
 	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// if you like it beautiful
 	//options := jsbeautifier.DefaultOptions()
@@ -169,6 +172,15 @@ func extractJSLinksFromHTML(baseUrl string) []string {
 	return urls
 }
 
+// prepares the final output by replacing \" and ' with ""
+func prepareResult(result []string) []string {
+	for i := 0; i < len(result); i++ {
+		result[i] = strings.ReplaceAll(result[i], "\"", "")
+		result[i] = strings.ReplaceAll(result[i], "'", "")
+	}
+	return result
+}
+
 func main() {
 
 	parser := argparse.NewParser("goLinkFinder", "GoLinkFinder")
@@ -178,6 +190,7 @@ func main() {
 	err := parser.Parse(os.Args)
 	if err != nil {
 		fmt.Print(parser.Usage(err))
+		return
 
 	}
 
@@ -192,10 +205,9 @@ func main() {
 	var htmlUrls = extractJSLinksFromHTML(baseUrl)
 	downloadJSFile(htmlUrls, concurrency)
 	founds = unique(founds)
+	founds = prepareResult(founds)
 
 	for _, found := range founds {
-		found = strings.ReplaceAll(found, "\"", "")
-		found = strings.ReplaceAll(found, "'", "")
 		fmt.Println(found)
 	}
 
@@ -203,15 +215,14 @@ func main() {
 
 		f, err := os.OpenFile("./"+*output,
 			os.O_CREATE|os.O_WRONLY, 0644)
-		defer f.Close()
 
 		if err != nil {
 			log.Println(err)
 		}
 
+		defer f.Close()
+
 		for _, found := range founds {
-			found = strings.ReplaceAll(found, "\"", "")
-			found = strings.ReplaceAll(found, "'", "")
 			if _, err := f.WriteString(found + "\n"); err != nil {
 				log.Fatal(err)
 			}
